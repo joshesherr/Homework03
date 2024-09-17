@@ -4,26 +4,31 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox id="backImage" fx:id="vBox" alignment="CENTER" spacing="20.0" style="-fx-background-image: url('/Users/olha/IdeaProjects/Homework03/src/main/resources/images/maze.png');" styleClass="vbox" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
+<VBox id="backImage" fx:id="vBox" alignment="CENTER" onMouseClicked="#onMouseClick" spacing="20.0" style="-fx-background-image: url('/Users/olha/IdeaProjects/Homework03/src/main/resources/images/maze.png');" styleClass="vbox" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
    <children>
-      <AnchorPane fx:id="anchorPane" prefHeight="200.0" prefWidth="200.0">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <ImageView fx:id="background" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../images/maze.png" />
-               </image>
-            </ImageView>
-            <ImageView fx:id="robot" fitHeight="9.0" fitWidth="9.0" layoutX="4.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../images/robot.png" />
-               </image>
-            </ImageView>
+            <AnchorPane fx:id="anchorPane" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <ImageView fx:id="background" fitHeight="400.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../maze.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="robot" fitHeight="21.0" fitWidth="71.0" layoutX="12.0" layoutY="242.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../robot.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
          </children>
-      </AnchorPane>
+      </HBox>
    </children>
 </VBox>
