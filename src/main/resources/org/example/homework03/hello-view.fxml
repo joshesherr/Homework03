@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox id="backImage" fx:id="vBox" alignment="CENTER" spacing="20.0" styleClass="vbox" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
+<VBox alignment="CENTER" prefHeight="578.0" prefWidth="569.0" spacing="20.0" stylesheets="@styles/application.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -33,12 +33,12 @@
             </AnchorPane>
          </children>
       </HBox>
-      <HBox prefHeight="0.0" prefWidth="480.0" spacing="8.0">
+      <HBox prefHeight="26.0" prefWidth="478.0" spacing="8.0">
          <children>
-            <Button focusTraversable="false" mnemonicParsing="false" onAction="#onImageSelectClicked" prefHeight="26.0" prefWidth="133.0" text="Choose Maze Image" />
-            <ToggleButton fx:id="startAuto" focusTraversable="false" mnemonicParsing="false" onAction="#onStartClicked" text="Start Auto Solve" />
-            <Text fx:id="onLeftTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="isWallOnLeft: " />
-            <Text fx:id="inFrontTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="isWallinFront" />
+            <Button alignment="TOP_LEFT" focusTraversable="false" mnemonicParsing="false" onAction="#onImageSelectClicked" prefHeight="26.0" prefWidth="133.0" text="Choose Maze Image" />
+            <ToggleButton fx:id="startAuto" focusTraversable="false" mnemonicParsing="false" onAction="#onStartClicked" styleClass="button" text="Start Auto Solve" />
+            <Text fx:id="onLeftTxt" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="true" text="isWallOnLeft: " />
+            <Text fx:id="inFrontTxt" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="true" text="isWallinFront" />
             <Text fx:id="direction" strokeType="OUTSIDE" strokeWidth="0.0" text="direction:" />
          </children>
       </HBox>

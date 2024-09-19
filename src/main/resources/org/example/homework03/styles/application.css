@@ -1,0 +1,11 @@
+.button {
+    -fx-text-fill: #000000;
+}
+
+.true {
+    -fx-fill: #098f00;
+}
+
+.false {
+    -fx-fill: #8f0000;
+}

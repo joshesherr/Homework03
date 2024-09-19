@@ -27,7 +27,7 @@ public class HelloApplication extends Application {
         HelloController controller = fxmlLoader.getController();
 
         Scene scene = new Scene(root, 700, 500);
-        stage.setTitle("Robot");
+        stage.setTitle("Robot Maze");
         stage.setScene(scene);
         stage.show();
 
