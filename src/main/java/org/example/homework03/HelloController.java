@@ -5,6 +5,7 @@ import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -13,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
@@ -23,16 +25,36 @@ import java.net.MalformedURLException;
 public class HelloController {
 
     @FXML
+    private Text inFrontTxt;
+    @FXML
+    private Text onLeftTxt;
+    @FXML
+    private Text direction;
+
+    @FXML
+    private ToggleButton startAuto;
+
+    @FXML
     private AnchorPane anchorPane;
 
     @FXML
     private ImageView maze;
 
+    static final int UP=0, RIGHT=1, DOWN=2, LEFT=3;
     @FXML
     private ImageView robot;
     private final static int robotSpeed = 8;
+    int robotFowardDirection=RIGHT;
 
-    private void moveRobot(int x, int y) {
+    private void moveRobot() {
+        int x=0;
+        int y=0;
+        switch (robotFowardDirection) {
+            case UP: y=-1;break;
+            case DOWN: y=1;break;
+            case LEFT: x=-1;break;
+            case RIGHT: x=1;break;
+        }
         robot.setRotate( (y==0)?((x>0)?90:-90):(y>0)?180:0 ); //set rotation based off movement.
 
         //test move robot to new position.
@@ -53,6 +75,11 @@ public class HelloController {
         double scanPosX = newXPos + roboCenterX + x*roboCenterX;
         double scanPosY = newYPos + roboCenterY + y*roboCenterY;
 
+        //Debug Info..
+        inFrontTxt.setText("isWallInFront: " + isWallInFront());
+        onLeftTxt.setText("isWallOnLeft: " + isWallOnLeft());
+        direction.setText("direction: " + robotFowardDirection);
+
         //search the image at the scan location for a color. keep scan within bounds of image.
         if (isColorValid(getColorAtPosition((int) scanPosX, (int) scanPosY))) {
             robot.setLayoutX(newXPos);
@@ -63,38 +90,52 @@ public class HelloController {
     @FXML
     public void onKeyPressed(KeyEvent e) {//Event passed from main stage key event
         switch (e.getCode()) {
-            case UP: moveRobot(0,-1); break;
-            case DOWN: moveRobot(0,1); break;
-            case LEFT: moveRobot(-1,0); break;
-            case RIGHT: moveRobot(1,0); break;
+            case UP: robotFowardDirection=UP; moveRobot(); break;
+            case DOWN: robotFowardDirection=DOWN; moveRobot(); break;
+            case LEFT: robotFowardDirection=LEFT; moveRobot(); break;
+            case RIGHT: robotFowardDirection=RIGHT; moveRobot(); break;
         }
     }
 
+    //Image file uploader
     FileChooser fileChooser = new FileChooser();
-
     @FXML
     public void onImageSelectClicked() throws MalformedURLException {
         File file = fileChooser.showOpenDialog(maze.getScene().getWindow());
         if (file != null) maze.setImage(new Image(file.toURI().toURL().toExternalForm()));
     }
 
+    //Auto Solver
     @FXML
-    public void onStartAnimationClicked() {
+    Timeline timeline;
+    public void onStartClicked() {
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> {
-            if (robot.getLayoutX() < maze.getImage().getWidth() / 2.0 - 8) {
+        if (!startAuto.isSelected()) {
+            timeline.stop();
+            startAuto.setText("Start Auto Solve");
+            return;
+        }
+        startAuto.setText("Stop Auto Solve");
+
+        timeline = new Timeline(new KeyFrame(Duration.millis(20), event -> {
+            if (robot.getLayoutX() < maze.getImage().getWidth() * .94) {
                 if (isWallOnLeft()) {
                     if (isWallInFront()) {
-                        robot.setRotate(robot.getRotate() + 90);
-                        robotFowardDirection=(robotFowardDirection+1)%4;
-                    } else {
-                        moveRobotFoward();
+                        moveRobot();// move a bit before rotating
+                        robotFowardDirection=(robotFowardDirection+1)%4;// Rotate CW
                     }
+                    moveRobot();//left wall is present. keep moving!
                 } else {
-                    robot.setRotate(robot.getRotate() - 90);
-                    robotFowardDirection=(robotFowardDirection-1)%4;
-                    moveRobotFoward();
+                    moveRobot();// move a bit before rotating
+                    robotFowardDirection=(robotFowardDirection+3)%4;// Rotate CCW
+                    moveRobot();moveRobot();moveRobot();//extra moves in case left wall is not immediately there.
                 }
+            }
+            else {
+                System.out.println("DOONNNNEE!!!!!");
+                startAuto.setSelected(false);
+                startAuto.setText("Start Auto Solve");
+                timeline.stop();
             }
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -125,17 +166,6 @@ public class HelloController {
 //        pathTransition.play();
     }
 
-    int robotFowardDirection=RIGHT;
-    static final int UP=0, RIGHT=1, DOWN=2, LEFT=3;
-
-    private void moveRobotFoward() {
-        switch (robotFowardDirection) {
-            case UP: robot.setLayoutY(robot.getLayoutY()-robotSpeed); break;
-            case DOWN: robot.setLayoutY(robot.getLayoutY()+robotSpeed);break;
-            case LEFT: robot.setLayoutX(robot.getLayoutX()-robotSpeed);break;
-            case RIGHT: robot.setLayoutX(robot.getLayoutX()+robotSpeed);break;
-        }
-    }
 
 //    private Path findPath() {
 //        // Setting up the path
@@ -176,23 +206,15 @@ public class HelloController {
 
     private boolean isWallOnLeft() {
         //test move robot to new position.
-        double newXPos = robot.getLayoutX();
-        double newYPos = robot.getLayoutY() + ((robotFowardDirection==RIGHT)?robotSpeed:((robotFowardDirection==LEFT)?-robotSpeed:0));;
+        double scanPosX = robot.getLayoutX() + (robot.getImage().getWidth()/2.0);;
+        double scanPosY = robot.getLayoutY() + (robot.getImage().getHeight()/2.0);;
 
-        // find the center of the robot image
-        double roboCenterX = (robot.getImage().getWidth()/2.0);
-        double roboCenterY = (robot.getImage().getHeight()/2.0);
-
-        //keep movement within the bounds of the image.
-        if (newXPos>maze.getImage().getWidth()) newXPos = maze.getImage().getWidth();
-        else if (newXPos<0) newXPos = 0;
-        if (newYPos>maze.getImage().getHeight()) newYPos = maze.getImage().getHeight();
-        else if (newYPos<0) newYPos = 0;
-
-        //offset scan to center and outward into the movement direction
-        double scanPosX = newXPos + roboCenterX;
-        double scanPosY = newYPos + roboCenterY - roboCenterY;
-
+        switch ( robotFowardDirection ) {
+            case UP: scanPosX-=robot.getImage().getWidth();break;
+            case DOWN: scanPosX+=robot.getImage().getWidth();break;
+            case LEFT: scanPosY+=robot.getImage().getHeight();break;
+            case RIGHT: scanPosY-=robot.getImage().getHeight();break;
+        }
 
         // Read the color at the scan position
         return !isColorValid(getColorAtPosition((int) scanPosX, (int) scanPosY));
@@ -200,23 +222,17 @@ public class HelloController {
 
     private boolean isWallInFront() {
         //test move robot to new position.
-        double newXPos = robot.getLayoutX() + ((robotFowardDirection==RIGHT)?robotSpeed:((robotFowardDirection==LEFT)?-robotSpeed:0));
-        double newYPos = robot.getLayoutY();
+        double scanPosX = robot.getLayoutX() + (robot.getImage().getWidth()/2.0);;
+        double scanPosY = robot.getLayoutY() + (robot.getImage().getHeight()/2.0);;
 
-        // find the center of the robot image
-        double roboCenterX = (robot.getImage().getWidth()/2.0);
-        double roboCenterY = (robot.getImage().getHeight()/2.0);
+        switch (robotFowardDirection) {
+            case UP: scanPosY-=robot.getImage().getHeight();break;
+            case DOWN: scanPosY+=robot.getImage().getHeight();break;
+            case LEFT: scanPosX-=robot.getImage().getWidth();break;
+            case RIGHT: scanPosX+=robot.getImage().getWidth();break;
+        }
 
-        //keep movement within the bounds of the image.
-        if (newXPos>maze.getImage().getWidth()) newXPos = maze.getImage().getWidth();
-        else if (newXPos<0) newXPos = 0;
-        if (newYPos>maze.getImage().getHeight()) newYPos = maze.getImage().getHeight();
-        else if (newYPos<0) newYPos = 0;
-
-        //offset scan to center and outward into the movement direction
-        double scanPosX = newXPos + roboCenterX + roboCenterX;
-        double scanPosY = newYPos + roboCenterY;
-
+        // Read the color at the scan position
         return !isColorValid(getColorAtPosition((int) scanPosX, (int) scanPosY));
     }
 
