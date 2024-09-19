@@ -22,7 +22,7 @@
                         <Image url="@images/maze.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="robot" layoutX="14.0" layoutY="258.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="robot" layoutX="14.0" layoutY="261.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
                      <image>
                         <Image url="@images/robot.png" />
                      </image>
