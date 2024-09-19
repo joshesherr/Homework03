@@ -54,9 +54,7 @@ public class HelloController {
         double scanPosY = newYPos + roboCenterY + y*roboCenterY;
 
         //search the image at the scan location for a color. keep scan within bounds of image.
-        Color colorAtPos = ( scanPosX<maze.getImage().getWidth() && scanPosY<maze.getImage().getHeight())?maze.getImage().getPixelReader().getColor((int)(scanPosX),(int)(scanPosY)):Color.BLACK;;
-        // if the color is white or close to white, then proceed to move
-        if (colorAtPos.getRed()>0.9 && colorAtPos.getGreen()>0.9 && colorAtPos.getBlue()>0.9 ) {
+        if (isColorValid(getColorAtPosition((int) scanPosX, (int) scanPosY))) {
             robot.setLayoutX(newXPos);
             robot.setLayoutY(newYPos);
         }
@@ -88,12 +86,14 @@ public class HelloController {
                 if (isWallOnLeft()) {
                     if (isWallInFront()) {
                         robot.setRotate(robot.getRotate() + 90);
+                        robotFowardDirection=(robotFowardDirection+1)%4;
                     } else {
-                        moveRobot(1, 0);
+                        moveRobotFoward();
                     }
                 } else {
                     robot.setRotate(robot.getRotate() - 90);
-                    moveRobot(0, -1);
+                    robotFowardDirection=(robotFowardDirection-1)%4;
+                    moveRobotFoward();
                 }
             }
         }));
@@ -123,6 +123,18 @@ public class HelloController {
 //
 //        //Playing path transition
 //        pathTransition.play();
+    }
+
+    int robotFowardDirection=RIGHT;
+    static final int UP=0, RIGHT=1, DOWN=2, LEFT=3;
+
+    private void moveRobotFoward() {
+        switch (robotFowardDirection) {
+            case UP: robot.setLayoutY(robot.getLayoutY()-robotSpeed); break;
+            case DOWN: robot.setLayoutY(robot.getLayoutY()+robotSpeed);break;
+            case LEFT: robot.setLayoutX(robot.getLayoutX()-robotSpeed);break;
+            case RIGHT: robot.setLayoutX(robot.getLayoutX()+robotSpeed);break;
+        }
     }
 
 //    private Path findPath() {
@@ -165,7 +177,7 @@ public class HelloController {
     private boolean isWallOnLeft() {
         //test move robot to new position.
         double newXPos = robot.getLayoutX();
-        double newYPos = robot.getLayoutY() - robotSpeed;
+        double newYPos = robot.getLayoutY() + ((robotFowardDirection==RIGHT)?robotSpeed:((robotFowardDirection==LEFT)?-robotSpeed:0));;
 
         // find the center of the robot image
         double roboCenterX = (robot.getImage().getWidth()/2.0);
@@ -183,17 +195,12 @@ public class HelloController {
 
 
         // Read the color at the scan position
-        Color colorAtPos = maze.getImage().getPixelReader().getColor((int) scanPosX, (int) scanPosY);
-
-
-        // Check if the color is not white (indicating a wall)
-        return !(colorAtPos.getRed() > 0.9 && colorAtPos.getGreen() > 0.9 && colorAtPos.getBlue() > 0.9);
-
+        return !isColorValid(getColorAtPosition((int) scanPosX, (int) scanPosY));
     }
 
     private boolean isWallInFront() {
         //test move robot to new position.
-        double newXPos = robotSpeed + robot.getLayoutX();
+        double newXPos = robot.getLayoutX() + ((robotFowardDirection==RIGHT)?robotSpeed:((robotFowardDirection==LEFT)?-robotSpeed:0));
         double newYPos = robot.getLayoutY();
 
         // find the center of the robot image
@@ -210,14 +217,14 @@ public class HelloController {
         double scanPosX = newXPos + roboCenterX + roboCenterX;
         double scanPosY = newYPos + roboCenterY;
 
-
-
-        // Read the color at the scan position
-        Color colorAtPos = maze.getImage().getPixelReader().getColor((int) scanPosX, (int) scanPosY);
-
-
-        // Check if the color is not white (indicating a wall)
-        return !(colorAtPos.getRed() > 0.9 && colorAtPos.getGreen() > 0.9 && colorAtPos.getBlue() > 0.9);
+        return !isColorValid(getColorAtPosition((int) scanPosX, (int) scanPosY));
     }
 
+
+    public boolean isColorValid(Color colorAtPos) {
+        return (colorAtPos.getRed()>0.9 && colorAtPos.getGreen()>0.9 && colorAtPos.getBlue()>0.9 );
+    }
+    private Color getColorAtPosition(double posX, double posY) {
+        return (posX > 0 && posY > 0 && posX < maze.getImage().getWidth() && posY < maze.getImage().getHeight()) ? maze.getImage().getPixelReader().getColor((int) (posX), (int) (posY)) : Color.BLACK;
+    }
 }
