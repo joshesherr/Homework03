@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
@@ -8,9 +9,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" prefHeight="578.0" prefWidth="569.0" spacing="20.0" stylesheets="@styles/application.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
+<VBox alignment="CENTER" prefHeight="578.0" prefWidth="569.0" spacing="20.0" stylesheets="@styles/application.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -41,6 +48,63 @@
             <Text fx:id="inFrontTxt" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="true" text="isWallinFront" />
             <Text fx:id="direction" strokeType="OUTSIDE" strokeWidth="0.0" text="direction:" />
          </children>
+      </HBox>
+      <HBox fx:id="carBox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+         <children>
+            <Group fx:id="carGroup">
+               <children>
+                  <Rectangle fx:id="carbody" arcHeight="5.0" arcWidth="5.0" fill="#107625" height="9.0" layoutY="3.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                  <Rectangle fx:id="carTop" arcHeight="5.0" arcWidth="5.0" fill="#107625" height="9.0" layoutY="-5.0" stroke="BLACK" strokeType="INSIDE" width="19.0" />
+                  <Circle fx:id="wheel1" layoutX="23.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE">
+                     <fill>
+                        <RadialGradient centerX="0.5" centerY="0.5" focusAngle="-5.29" focusDistance="0.7155962602807842" radius="0.7293577544186094">
+                           <stops>
+                              <Stop>
+                                 <color>
+                                    <Color />
+                                 </color>
+                              </Stop>
+                              <Stop offset="1.0">
+                                 <color>
+                                    <Color red="1.0" green="1.0" blue="1.0" />
+                                 </color>
+                              </Stop>
+                           </stops>
+                        </RadialGradient>
+                     </fill>
+                  </Circle>
+                  <Polygon fill="#107625" layoutX="46.0" layoutY="-25.0" points="-27.599994659423828, 28.00001335144043, -16.999984741210938, 28.00001335144043, -27.599994659423828, 20.200000762939453" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                  <Circle fx:id="wheel2" layoutX="6.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE">
+                     <fill>
+                        <RadialGradient centerX="0.5" centerY="0.5" focusAngle="-5.29" focusDistance="0.7155962602807842" radius="0.7293577544186094">
+                           <stops>
+                              <Stop>
+                                 <color>
+                                    <Color />
+                                 </color>
+                              </Stop>
+                              <Stop offset="1.0">
+                                 <color>
+                                    <Color red="1.0" green="1.0" blue="1.0" />
+                                 </color>
+                              </Stop>
+                           </stops>
+                        </RadialGradient>
+                     </fill>
+                  </Circle>
+               </children>
+            </Group>
+            <Button fx:id="swapCarBtn" mnemonicParsing="false" onAction="#swapWithRobot" onMouseEntered="#spinWheels" text="Switch to Car" />
+         </children>
+         <VBox.margin>
+            <Insets top="-10.0" />
+         </VBox.margin>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="30.0" left="20.0" />
+         </padding>
       </HBox>
    </children>
 </VBox>

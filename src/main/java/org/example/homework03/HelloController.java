@@ -1,7 +1,9 @@
 package org.example.homework03;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -12,6 +14,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -34,6 +42,96 @@ public class HelloController {
     @FXML
     private ImageView maze;
 
+    //Car code begins here
+    @FXML
+    private HBox carBox;
+
+    @FXML
+    private Group carGroup;
+
+    @FXML
+    private Rectangle carTop;
+
+    @FXML
+    private Rectangle carbody;
+
+    @FXML
+    private Button swapCarBtn;
+
+    @FXML
+    private Circle wheel1;
+
+    @FXML
+    private Circle wheel2;
+
+    //WIP, need to figure out how to dynamically center car after they are swapped in their containers
+    @FXML
+    void swapWithRobot(ActionEvent event) {
+
+        // Remove the nodes from their parent containers (Robot in AnchorPane, Car in Hbox)
+        anchorPane.getChildren().remove(robot);
+        carBox.getChildren().remove(carGroup);
+
+        // Store the robot's position
+        double robotX = robot.getLayoutX();
+        double robotY = robot.getLayoutY();
+
+        // Store the carGroup's position (Group needs translate for XY coords?)
+        double carTranslateX = carGroup.getTranslateX();
+        double carTranslateY = carGroup.getTranslateY();
+
+        // Find the index of the button in the HBox
+        int buttonIndex = carBox.getChildren().indexOf(swapCarBtn);
+
+        // Validation to add the robot before the button in the HBox
+        if (buttonIndex != -1) {
+            carBox.getChildren().add(buttonIndex, robot);
+        } else {
+            // If button is not found, just add robot at the end
+            carBox.getChildren().add(robot);
+        }
+
+        // Add carGroup to the AnchorPane
+        anchorPane.getChildren().add(carGroup);
+
+        // Update positions of robot
+        robot.setTranslateX(carTranslateX);
+        robot.setTranslateY(carTranslateY);
+
+        // For the carGroup, set absolute layoutX/Y in AnchorPane
+        //Needs to be fixed, currently hardcoding 5 to Y coordinate to center it in maze hallway
+        carGroup.setLayoutX(robotX);
+        carGroup.setLayoutY(robotY+5);
+
+        System.out.println("Swapped robot and carGroup between AnchorPane and HBox");
+    }
+
+    @FXML
+    void spinWheels(MouseEvent event) {
+        System.out.println("Button hovered"); //Removable debug print
+
+        //Rotation for wheel 1
+        RotateTransition spinWheel1 = new RotateTransition(Duration.seconds(.8), wheel1);
+        spinWheel1.setByAngle(360);                   // Rotate by 360 degrees
+        spinWheel1.setCycleCount(RotateTransition.INDEFINITE);  // Rotate infinitely
+
+        //Rotation for wheel 2
+        RotateTransition spinWheel2 = new RotateTransition(Duration.seconds(.8), wheel2);
+        spinWheel2.setByAngle(360);                   // Rotate by 360 degrees
+        spinWheel2.setCycleCount(RotateTransition.INDEFINITE);  // Rotate infinitely
+
+        // Start the rotation
+        spinWheel1.play();
+        spinWheel2.play();
+
+        // Stop rotation on mouse removal from button hovering
+        swapCarBtn.setOnMouseExited(e -> {
+            System.out.println("Mouse exited, stopping wheels"); //Removable debug print
+            spinWheel1.stop();
+            spinWheel2.stop();
+        });
+    }
+    /////////////////// Line break, Car code ends here
     static final int UP=0, RIGHT=1, DOWN=2, LEFT=3;
     @FXML
     private ImageView robot;
