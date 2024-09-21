@@ -29,6 +29,7 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(root, 900, 700);
         stage.setTitle("Robot Maze");
         stage.setScene(scene);
+
         stage.show();
 
         scene.setOnKeyPressed(controller::onKeyPressed);

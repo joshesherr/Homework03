@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 
 public class HelloController {
 
+    private boolean activeRobotActor = true;
+
     @FXML
     private Text inFrontTxt;
     @FXML
@@ -63,15 +65,12 @@ public class HelloController {
 
     @FXML
     private Circle wheel2;
-
+  
     @FXML
     private Text initialPosition;
 
-    //WIP, need to figure out how to dynamically center car after they are swapped in their containers
     @FXML
     void swapWithRobot(ActionEvent event) {
-
-        // Remove the nodes from their parent containers (Robot in AnchorPane, Car in Hbox)
         anchorPane.getChildren().remove(robot);
         carBox.getChildren().remove(carGroup);
 
@@ -80,33 +79,53 @@ public class HelloController {
         double robotY = robot.getLayoutY();
 
         // Store the carGroup's position (Group needs translate for XY coords?)
-        double carTranslateX = carGroup.getTranslateX();
-        double carTranslateY = carGroup.getTranslateY();
+        double carX = carGroup.getLayoutX();
+        double carY = carGroup.getLayoutY();
 
         // Find the index of the button in the HBox
         int buttonIndex = carBox.getChildren().indexOf(swapCarBtn);
 
-        // Validation to add the robot before the button in the HBox
-        if (buttonIndex != -1) {
-            carBox.getChildren().add(buttonIndex, robot);
-        } else {
-            // If button is not found, just add robot at the end
-            carBox.getChildren().add(robot);
+        // Remove the nodes from their parent containers (Robot in AnchorPane, Car in Hbox)
+        if (activeRobotActor) { //Validation to stop crashing, can implement else to swap backwards here
+            activeRobotActor = false;
+
+            // Validation to add the robot before the button in the HBox
+            if (buttonIndex != -1) {
+                carBox.getChildren().add(buttonIndex, robot);
+            } else {
+                // If button is not found, just add robot at the end
+                carBox.getChildren().add(robot);
+            }
+
+            // Add carGroup to the AnchorPane
+            anchorPane.getChildren().add(carGroup);
+
+            // Update positions
+            robot.setLayoutX(carX);
+            robot.setLayoutY(carY);
+            carGroup.setLayoutX(robotX);
+            carGroup.setLayoutY(robotY + 5); // Adjust to center in the maze hallway
+
+            System.out.println("Swapped robot and carGroup between AnchorPane and HBox");
         }
+        else {
+            activeRobotActor = true;
+            // Validation to add the Car before the button in the HBox
+            if (buttonIndex != -1) {
+                carBox.getChildren().add(buttonIndex, carGroup);
+            } else {
+                // If button is not found, just add Car at the end
+                carBox.getChildren().add(carGroup);
+            }
+            // Add Robot back to the AnchorPane
+            anchorPane.getChildren().add(robot);
 
-        // Add carGroup to the AnchorPane
-        anchorPane.getChildren().add(carGroup);
-
-        // Update positions of robot
-        robot.setTranslateX(carTranslateX);
-        robot.setTranslateY(carTranslateY);
-
-        // For the carGroup, set absolute layoutX/Y in AnchorPane
-        //Needs to be fixed, currently hardcoding 5 to Y coordinate to center it in maze hallway
-        carGroup.setLayoutX(robotX);
-        carGroup.setLayoutY(robotY+5);
-
-        System.out.println("Swapped robot and carGroup between AnchorPane and HBox");
+            // Update positions
+            carGroup.setLayoutX(robotX);
+            carGroup.setLayoutY(robotY);
+            robot.setLayoutX(carX);
+            robot.setLayoutY(carY-5);
+        }
     }
 
     @FXML
@@ -134,6 +153,10 @@ public class HelloController {
             spinWheel2.stop();
         });
     }
+
+
+
+
     /////////////////// Line break, Car code ends here
     static final int UP=0, RIGHT=1, DOWN=2, LEFT=3;
     @FXML
@@ -176,43 +199,60 @@ public class HelloController {
     }
 
     private void moveRobot() {
-        int x=0;
-        int y=0;
+        int x = 0;
+        int y = 0;
         switch (robotFowardDirection) {
-            case UP: y = -1;break;
-            case DOWN: y = 1;break;
-            case LEFT: x = -1;break;
-            case RIGHT: x = 1;break;
+            case UP:
+                y = -1;
+                break;
+            case DOWN:
+                y = 1;
+                break;
+            case LEFT:
+                x = -1;
+                break;
+            case RIGHT:
+                x = 1;
+                break;
         }
-        robot.setRotate( (y==0)?((x>0)?90:-90):(y>0)?180:0 ); //set rotation based off movement.
+//        if (activeRobotActor) { //If statement for running code for active actor, Placeholder for integrating carGroup into method
+            robot.setRotate((y == 0) ? ((x > 0) ? 90 : -90) : (y > 0) ? 180 : 0); //set rotation based off movement.
 
-        //test move robot to new position.
-        double newXPos = (robotSpeed*x) + robot.getLayoutX();
-        double newYPos = (robotSpeed*y) + robot.getLayoutY();
+            //test move robot to new position.
+            double newXPos = (robotSpeed * x) + robot.getLayoutX();
+            double newYPos = (robotSpeed * y) + robot.getLayoutY();
 
-        // find the center of the robot image
-        double roboCenterX = (robot.getImage().getWidth()/2.0);
-        double roboCenterY = (robot.getImage().getHeight()/2.0);
+            // find the center of the robot image
+            double roboCenterX = (robot.getImage().getWidth() / 2.0);
+            double roboCenterY = (robot.getImage().getHeight() / 2.0);
 
-        //keep movement within the bounds of the image.
-        if (newXPos>maze.getImage().getWidth()) newXPos = maze.getImage().getWidth();
-        else if (newXPos<0) newXPos = 0;
-        if (newYPos>maze.getImage().getHeight()) newYPos = maze.getImage().getHeight();
-        else if (newYPos<0) newYPos = 0;
+            //keep movement within the bounds of the image.
+            if (newXPos > maze.getImage().getWidth()) newXPos = maze.getImage().getWidth();
+            else if (newXPos < 0) newXPos = 0;
+            if (newYPos > maze.getImage().getHeight()) newYPos = maze.getImage().getHeight();
+            else if (newYPos < 0) newYPos = 0;
 
-        //offset scan to center and outward into the movement direction
-        double scanPosX = newXPos + roboCenterX + x*roboCenterX;
-        double scanPosY = newYPos + roboCenterY + y*roboCenterY;
+            //offset scan to center and outward into the movement direction
+            double scanPosX = newXPos + roboCenterX + x * roboCenterX;
+            double scanPosY = newYPos + roboCenterY + y * roboCenterY;
 
-        //Set Debug Info..
-        String txt1 = isWallInFront()+""; inFrontTxt.setText("isWallInFront: " + txt1); inFrontTxt.getStyleClass().clear(); inFrontTxt.getStyleClass().add(txt1);
-        String txt2 = isWallOnLeft()+""; onLeftTxt.setText("isWallOnLeft: " + txt2); onLeftTxt.getStyleClass().clear(); onLeftTxt.getStyleClass().add(txt2);
-        int d = robotFowardDirection; direction.setText("direction: " + (d==UP?"UP":(d==DOWN?"DOWN":(d==LEFT?"LEFT":"RIGHT"))) );
+            //Set Debug Info..
+            String txt1 = isWallInFront() + "";
+            inFrontTxt.setText("isWallInFront: " + txt1);
+            inFrontTxt.getStyleClass().clear();
+            inFrontTxt.getStyleClass().add(txt1);
+            String txt2 = isWallOnLeft() + "";
+            onLeftTxt.setText("isWallOnLeft: " + txt2);
+            onLeftTxt.getStyleClass().clear();
+            onLeftTxt.getStyleClass().add(txt2);
+            int d = robotFowardDirection;
+            direction.setText("direction: " + (d == UP ? "UP" : (d == DOWN ? "DOWN" : (d == LEFT ? "LEFT" : "RIGHT"))));
 
-        //search the image at the scan location for a color. keep scan within bounds of image.
-        if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
-            robot.setLayoutX(newXPos);
-            robot.setLayoutY(newYPos);
+            //search the image at the scan location for a color. keep scan within bounds of image.
+            if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
+                robot.setLayoutX(newXPos);
+                robot.setLayoutY(newYPos);
+  //          }
         }
     }
 
