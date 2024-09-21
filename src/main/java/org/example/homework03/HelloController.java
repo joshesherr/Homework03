@@ -69,7 +69,7 @@ public class HelloController {
     //Should I store XY coords of robot beginning?
     //double startingX = robot.getLayoutX();
     //double startingY = robot.getLayoutY(); Doesnt work till robot is created
-    
+
     @FXML
     void swapWithRobot(ActionEvent event) {
         anchorPane.getChildren().remove(robot);
