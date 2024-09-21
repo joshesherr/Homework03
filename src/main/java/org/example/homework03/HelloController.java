@@ -268,8 +268,23 @@ public class HelloController {
 
     //Image file uploader
     FileChooser fileChooser = new FileChooser();
+
     @FXML
     public void onImageSelectClicked() throws MalformedURLException {
+        // Setting the initial directory to our images folder
+        File initialDirectory = null;
+        try {
+            // Get the resources/org.../images folder
+            initialDirectory = new File(getClass().getResource("/org/example/homework03/images").toURI());
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle any potential exceptions
+        }
+
+        // Check if the directory exists and set it as the initial directory
+        if (initialDirectory != null && initialDirectory.exists()) {
+            fileChooser.setInitialDirectory(initialDirectory);
+        }
+
         File file = fileChooser.showOpenDialog(maze.getScene().getWindow());
         if (file != null) {
             maze.setImage(new Image(file.toURI().toURL().toExternalForm()));
