@@ -182,7 +182,7 @@ public class HelloController {
                 x = 1;
                 break;
         }
-        if (activeRobotActor) { //If statement for running code for active actor
+//        if (activeRobotActor) { //If statement for running code for active actor, Placeholder for integrating carGroup into method
             robot.setRotate((y == 0) ? ((x > 0) ? 90 : -90) : (y > 0) ? 180 : 0); //set rotation based off movement.
 
             //test move robot to new position.
@@ -219,7 +219,7 @@ public class HelloController {
             if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
                 robot.setLayoutX(newXPos);
                 robot.setLayoutY(newYPos);
-            }
+  //          }
         }
     }
 
