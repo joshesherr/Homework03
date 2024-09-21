@@ -31,7 +31,7 @@
                         <Image url="@images/maze.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="robot" layoutX="14.0" layoutY="259.0" onKeyPressed="#onKeyPressed" pickOnBounds="true" preserveRatio="true" rotate="90.0">
+                  <ImageView fx:id="robot" layoutX="14.0" layoutY="259.0" onKeyPressed="#onKeyPressed" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" rotate="90.0">
                      <image>
                         <Image url="@images/robot.png" />
                      </image>
@@ -95,6 +95,7 @@
                </children>
             </Group>
             <Button fx:id="swapCarBtn" mnemonicParsing="false" onAction="#swapWithRobot" onMouseEntered="#spinWheels" text="Switch to Car" />
+            <Text fx:id="initialPosition" strokeType="OUTSIDE" strokeWidth="0.0" text="Let's play!" />
          </children>
          <VBox.margin>
             <Insets top="-10.0" />

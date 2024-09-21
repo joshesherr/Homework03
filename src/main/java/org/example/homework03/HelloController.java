@@ -65,10 +65,9 @@ public class HelloController {
 
     @FXML
     private Circle wheel2;
-
-    //Should I store XY coords of robot beginning?
-    //double startingX = robot.getLayoutX();
-    //double startingY = robot.getLayoutY(); Doesnt work till robot is created
+  
+    @FXML
+    private Text initialPosition;
 
     @FXML
     void swapWithRobot(ActionEvent event) {
@@ -165,6 +164,40 @@ public class HelloController {
     private final static int robotSpeed = 8;
     int robotFowardDirection=RIGHT;
 
+    // Method to initialize the robot's position
+    private void initializeRobotPosition() {
+        // Add mouse event handlers to the maze ImageView
+        maze.setOnMousePressed(this::onMousePressed);
+        maze.setOnMouseDragged(this::onMouseDragged);
+        maze.setOnMouseReleased(this::onMouseReleased);
+    }
+
+    @FXML
+    private void onMousePressed(MouseEvent event) {
+        // Set the initial position of the robot when the mouse is pressed
+        setRobotPosition(event.getX(), event.getY());
+    }
+
+    @FXML
+    private void onMouseDragged(MouseEvent event) {
+        // Update the robot's position as the mouse is dragged
+        setRobotPosition(event.getX(), event.getY());
+    }
+
+    @FXML
+    private void onMouseReleased(MouseEvent event) {
+        // Finalize the robot's position when the mouse is released
+        setRobotPosition(event.getX(), event.getY());
+    }
+
+    private void setRobotPosition(double x, double y) {
+        // Ensure the robot's position is within the bounds of the maze
+        double newX = Math.max(0, Math.min(x - robot.getImage().getWidth() / 2.0, maze.getImage().getWidth() - robot.getImage().getWidth()));
+        double newY = Math.max(0, Math.min(y - robot.getImage().getHeight() / 2.0, maze.getImage().getHeight() - robot.getImage().getHeight()));
+        robot.setLayoutX(newX);
+        robot.setLayoutY(newY);
+    }
+
     private void moveRobot() {
         int x = 0;
         int y = 0;
@@ -238,15 +271,18 @@ public class HelloController {
     @FXML
     public void onImageSelectClicked() throws MalformedURLException {
         File file = fileChooser.showOpenDialog(maze.getScene().getWindow());
-        if (file != null) maze.setImage(new Image(file.toURI().toURL().toExternalForm()));
+        if (file != null) {
+            maze.setImage(new Image(file.toURI().toURL().toExternalForm()));
+            initialPosition.setText("Please set the initial position of the robot");
+            initializeRobotPosition(); // Initialize robot position after loading the maze
+        }
     }
 
     //Auto Solver
     @FXML
     Timeline timeline;
     public void onStartClicked() {
-//        robot.setLayoutX(0);
-//        robot.setLayoutY(maze.getImage().getHeight() / 2.0);
+
         if (!startAuto.isSelected()) {
             timeline.stop();
             startAuto.setText("Start Auto Solve");
@@ -254,8 +290,22 @@ public class HelloController {
         }
         startAuto.setText("Stop Auto Solve");
 
+//        Timeline InitialTimeline = new Timeline(new KeyFrame(Duration.millis(20), event -> {
+//            if (!isWallOnLeft()) {
+//                moveRobot();
+//            }
+//        }));
+
+//        InitialTimeline.setCycleCount(Timeline.INDEFINITE);
+//        InitialTimeline.play();
+
         timeline = new Timeline(new KeyFrame(Duration.millis(20), event -> {
-            if (robot.getLayoutX() < maze.getImage().getWidth() * .94) {// navigate while robo position is less than %94 of the maze's width
+
+            if (robot.getLayoutX() < maze.getImage().getWidth() * .94) {
+
+
+
+                // navigate while robo position is less than %94 of the maze's width
                 if (isWallOnLeft()) {
                     if (isWallInFront()) {
                         moveRobot();// move a bit before rotating
