@@ -26,12 +26,15 @@ public class HelloApplication extends Application {
         Parent root = fxmlLoader.load();
         HelloController controller = fxmlLoader.getController();
 
-        Scene scene = new Scene(root, 700, 500);
+        Scene scene = new Scene(root, 700, 600);
         stage.setTitle("Robot Maze");
         stage.setScene(scene);
         stage.show();
 
         scene.setOnKeyPressed(controller::onKeyPressed);
+
+        // Request focus on the root node to ensure it can capture key events
+        root.requestFocus();
     }
 
     public static void main(String[] args) {

@@ -142,10 +142,10 @@ public class HelloController {
         int x=0;
         int y=0;
         switch (robotFowardDirection) {
-            case UP: y=-1;break;
-            case DOWN: y=1;break;
-            case LEFT: x=-1;break;
-            case RIGHT: x=1;break;
+            case UP: y = -1;break;
+            case DOWN: y = 1;break;
+            case LEFT: x = -1;break;
+            case RIGHT: x = 1;break;
         }
         robot.setRotate( (y==0)?((x>0)?90:-90):(y>0)?180:0 ); //set rotation based off movement.
 
@@ -201,7 +201,8 @@ public class HelloController {
     @FXML
     Timeline timeline;
     public void onStartClicked() {
-
+//        robot.setLayoutX(0);
+//        robot.setLayoutY(maze.getImage().getHeight() / 2.0);
         if (!startAuto.isSelected()) {
             timeline.stop();
             startAuto.setText("Start Auto Solve");
