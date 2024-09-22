@@ -303,9 +303,7 @@ public class HelloController {
     }
 
     private void moveRobot() {
-        if (activeRobotActor) { //If statement for running code for active actor, Placeholder for integrating carGroup into method
-            //keep robot code the same, else statement will call code for car?
-            System.out.println("Active Robot Actor -> Moving");
+        System.out.println("Active Robot Actor -> Moving");
         int x = 0;
         int y = 0;
         switch (robotFowardDirection) {
@@ -359,12 +357,8 @@ public class HelloController {
                 robot.setLayoutX(newXPos);
                 robot.setLayoutY(newYPos);
             }
-        } else {
-            //This is never being triggered
-            System.out.println("Active Car Actor -> Moving");
-            moveCar();
         }
-    }
+
 
 
     @FXML
