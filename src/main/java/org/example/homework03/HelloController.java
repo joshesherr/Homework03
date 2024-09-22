@@ -5,6 +5,8 @@ import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -71,14 +73,14 @@ public class HelloController {
 
     @FXML
     void swapWithRobot(ActionEvent event) {
+        anchorPane.requestFocus();
         anchorPane.getChildren().remove(robot);
         carBox.getChildren().remove(carGroup);
 
-        // Store the robot's position
+        // Store the robot & car's positions
         double robotX = robot.getLayoutX();
         double robotY = robot.getLayoutY();
 
-        // Store the carGroup's position (Group needs translate for XY coords?)
         double carX = carGroup.getLayoutX();
         double carY = carGroup.getLayoutY();
 
@@ -88,6 +90,8 @@ public class HelloController {
         // Remove the nodes from their parent containers (Robot in AnchorPane, Car in Hbox)
         if (activeRobotActor) { //Validation to stop crashing, can implement else to swap backwards here
             activeRobotActor = false;
+            System.out.println("Active Robot Actor=false");
+            swapCarBtn.setText("Switch to Robot");
 
             // Validation to add the robot before the button in the HBox
             if (buttonIndex != -1) {
@@ -105,10 +109,14 @@ public class HelloController {
             robot.setLayoutY(carY);
             carGroup.setLayoutX(robotX);
             carGroup.setLayoutY(robotY + 5); // Adjust to center in the maze hallway
+            //Orient car back to standard position
+            carGroup.setRotate(0);
+            carGroup.setScaleX(1);
 
             System.out.println("Swapped robot and carGroup between AnchorPane and HBox");
         }
         else {
+            System.out.println("Active Robot Actor = true");
             activeRobotActor = true;
             // Validation to add the Car before the button in the HBox
             if (buttonIndex != -1) {
@@ -125,6 +133,9 @@ public class HelloController {
             carGroup.setLayoutY(robotY);
             robot.setLayoutX(carX);
             robot.setLayoutY(carY-5);
+            //Orient car back to standard position
+            carGroup.setRotate(0);
+            carGroup.setScaleX(1);
         }
     }
 
@@ -154,8 +165,101 @@ public class HelloController {
         });
     }
 
+    //WIP Car code, make sure to make wheels spin while driving too :)
+    private void moveCar() {
+        int x = 0;
+        int y = 0;
+        switch (robotFowardDirection) {
+            case UP:
+                carGroup.setRotate(270); // Rotate up (270 degrees)
+                carGroup.setScaleX(1);
+                y = -1;
+                break;
+            case DOWN:
+                carGroup.setRotate(90); // Rotate down (90 degrees)
+                carGroup.setScaleX(1);
+                y = 1;
+                break;
+            case LEFT:
+                carGroup.setRotate(0); // Rotate left (180 degrees)
+                carGroup.setScaleX(-1); //Flip car so it is not upside down
+                x = -1;
+                break;
+            case RIGHT:
+                carGroup.setRotate(0); //Set rotation back to 0 (Moving right)
+                carGroup.setScaleX(1); // Normal orientation, facing right
+                x = 1;
+                break;
+        }
+
+        //test move robot to new position.
+        double newXPos = (robotSpeed * x) + carGroup.getLayoutX();
+        double newYPos = (robotSpeed * y) + carGroup.getLayoutY();
+
+        // finding the center of the carGroup
+        double[] center = findGroupCenter(carGroup);
+        double carGroupCenterX = center[0];
+        double carGroupCenterY = center[1];
+
+        System.out.println("Center of carGroup: X=" + carGroupCenterX + ", Y=" + carGroupCenterY);
+
+        //keep movement within the bounds of the image.
+        double carWidth = carGroup.getBoundsInParent().getWidth();
+        double carHeight = carGroup.getBoundsInParent().getHeight();
+
+        if (newXPos + carWidth > maze.getImage().getWidth()) newXPos = maze.getImage().getWidth() - carWidth;
+        else if (newXPos < 0) newXPos = 0;
+        if (newYPos + carHeight > maze.getImage().getHeight()) newYPos = maze.getImage().getHeight() - carHeight;
+        else if (newYPos < 0) newYPos = 0;
 
 
+
+        //offset scan to center and outward into the movement direction
+        double scanPosX = newXPos + carGroupCenterX + x * carGroupCenterX;
+        double scanPosY = newYPos + carGroupCenterY + y * carGroupCenterY;
+
+        //Set Debug Info..
+        String txt1 = isWallInFront() + "";
+        inFrontTxt.setText("isWallInFront: " + txt1);
+        inFrontTxt.getStyleClass().clear();
+        inFrontTxt.getStyleClass().add(txt1);
+        String txt2 = isWallOnLeft() + "";
+        onLeftTxt.setText("isWallOnLeft: " + txt2);
+        onLeftTxt.getStyleClass().clear();
+        onLeftTxt.getStyleClass().add(txt2);
+        int d = robotFowardDirection;
+        direction.setText("direction: " + (d == UP ? "UP" : (d == DOWN ? "DOWN" : (d == LEFT ? "LEFT" : "RIGHT"))));
+
+        //search the image at the scan location for a color. keep scan within bounds of image.
+//        if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
+            carGroup.setLayoutX(newXPos);
+            carGroup.setLayoutY(newYPos);
+//        }
+    }
+
+    private void setCarPosition(double x, double y) {
+        double[] center = findGroupCenter(carGroup);
+        double carCenterX = center[0];
+        double carCenterY = center[1];
+
+        // Ensure the carGroup's position is within the bounds of the maze
+        double newX = Math.max(0, Math.min(x - carCenterX, maze.getImage().getWidth() - carCenterX * 2));
+        double newY = Math.max(0, Math.min(y - carCenterY, maze.getImage().getHeight() - carCenterY * 2));
+
+
+        System.out.println("Center of carGroup: X=" + carCenterX + ", Y=" + carCenterY);
+
+        carGroup.setLayoutX(newX);
+        carGroup.setLayoutY(newY);
+    }
+
+    // Utility method to find center of carGroup
+    private double[] findGroupCenter(Group group) {
+        Bounds bounds = group.getBoundsInParent();
+        double centerX = (bounds.getMinX() + bounds.getWidth() / 2.0);
+        double centerY = (bounds.getMinY() + bounds.getHeight() / 2.0);
+        return new double[] {centerX, centerY};
+    }
 
     /////////////////// Line break, Car code ends here
     static final int UP=0, RIGHT=1, DOWN=2, LEFT=3;
@@ -199,6 +303,9 @@ public class HelloController {
     }
 
     private void moveRobot() {
+        if (activeRobotActor) { //If statement for running code for active actor, Placeholder for integrating carGroup into method
+            //keep robot code the same, else statement will call code for car?
+            System.out.println("Active Robot Actor -> Moving");
         int x = 0;
         int y = 0;
         switch (robotFowardDirection) {
@@ -215,7 +322,6 @@ public class HelloController {
                 x = 1;
                 break;
         }
-//        if (activeRobotActor) { //If statement for running code for active actor, Placeholder for integrating carGroup into method
             robot.setRotate((y == 0) ? ((x > 0) ? 90 : -90) : (y > 0) ? 180 : 0); //set rotation based off movement.
 
             //test move robot to new position.
@@ -252,18 +358,34 @@ public class HelloController {
             if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
                 robot.setLayoutX(newXPos);
                 robot.setLayoutY(newYPos);
-  //          }
+            }
+        } else {
+            //This is never being triggered
+            System.out.println("Active Car Actor -> Moving");
+            moveCar();
         }
     }
 
+
     @FXML
     public void onKeyPressed(KeyEvent e) {//Event passed from main stage key event
-        switch (e.getCode()) {
-            case UP: robotFowardDirection=UP; moveRobot(); break;
-            case DOWN: robotFowardDirection=DOWN; moveRobot(); break;
-            case LEFT: robotFowardDirection=LEFT; moveRobot(); break;
-            case RIGHT: robotFowardDirection=RIGHT; moveRobot(); break;
+        if (activeRobotActor) {
+            switch (e.getCode()) {
+                case UP: robotFowardDirection=UP; moveRobot(); break;
+                case DOWN: robotFowardDirection=DOWN; moveRobot(); break;
+                case LEFT: robotFowardDirection=LEFT; moveRobot(); break;
+                case RIGHT: robotFowardDirection=RIGHT; moveRobot(); break;
+            }
+        } else {
+            System.out.println("Car movement keys used");
+            switch (e.getCode()) {
+                case UP: robotFowardDirection=UP; moveCar(); break;
+                case DOWN: robotFowardDirection=DOWN; moveCar(); break;
+                case LEFT: robotFowardDirection=LEFT; moveCar(); break;
+                case RIGHT: robotFowardDirection=RIGHT; moveCar(); break;
+            }
         }
+
     }
 
     //Image file uploader

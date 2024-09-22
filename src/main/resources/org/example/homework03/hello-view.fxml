@@ -17,21 +17,21 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" prefHeight="578.0" prefWidth="569.0" spacing="20.0" stylesheets="@styles/application.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
+<VBox alignment="CENTER" prefHeight="578.0" prefWidth="569.0" spacing="20.0" stylesheets="@styles/application.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.homework03.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
    <children>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <AnchorPane fx:id="anchorPane" prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane fx:id="anchorPane" onKeyPressed="#onKeyPressed" prefHeight="200.0" prefWidth="200.0">
                <children>
                   <ImageView fx:id="maze" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@images/maze.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="robot" layoutX="14.0" layoutY="259.0" onKeyPressed="#onKeyPressed" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" rotate="90.0">
+                  <ImageView fx:id="robot" layoutX="14.0" layoutY="259.0" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" rotate="90.0">
                      <image>
                         <Image url="@images/robot.png" />
                      </image>
