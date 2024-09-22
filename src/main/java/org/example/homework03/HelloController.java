@@ -77,11 +77,11 @@ public class HelloController {
     private void moveCar() {
         anchorPane.requestFocus();
         //Debugging statements
-        System.out.println("Car Y position before move: " + carGroup.getLayoutY());
+        System.out.println("\nCar Y position before move: " + carGroup.getLayoutY());
 
         int x = 0;
         int y = 0;
-        System.out.println("\nCurrent actorFowardDirection: " + actorForwardDirection);
+
         switch (actorForwardDirection) {
             case UP:
                 carGroup.setRotate(270); // Rotate up (270 degrees)
@@ -92,7 +92,6 @@ public class HelloController {
                 carGroup.setRotate(90); // Rotate down (90 degrees)
                 carGroup.setScaleX(1);
                 y = 1;
-                System.out.println("Car actor moving down" + "Car y=" + y);
                 break;
             case LEFT:
                 carGroup.setRotate(0); // Rotate left (180 degrees)
@@ -109,12 +108,13 @@ public class HelloController {
         // Test moving the car to a new position.
         double newXPos = (robotSpeed * x) + carGroup.getLayoutX();
         double newYPos = (robotSpeed * y) + carGroup.getLayoutY();
-        System.out.println("New Y position after move: " + newYPos);
+        System.out.println("New X position: " + newXPos + ", New Y position: " + newYPos);
 
-        // Get the precise bounds of the car (using bounds of the shape/image, not the Group)
+        // Get the bounds of the carGroup
         Bounds carBounds = carGroup.getBoundsInParent();
-        double carWidth = carBounds.getWidth();
+        double carWidth = carBounds.getWidth() ;
         double carHeight = carBounds.getHeight();
+        System.out.println("Car Bounds: Width = " + carWidth + ", Height = " + carHeight);
 
         // Keep the movement within the bounds of the maze
         //If Car would exceed right bounds of maze, validate
@@ -134,8 +134,9 @@ public class HelloController {
         // Perform collision detection (adjust for irregular shape)
         //This might not be working correctly
         double[] center = findGroupCenter(carGroup);
-        double scanPosX = newXPos + center[0] + x * center[0];
-        double scanPosY = newYPos + center[1] + y * center[1];
+        double scanPosX = newXPos + (x * center[0]);
+        double scanPosY = newYPos + (y * center[1]);
+        System.out.println("Scan Position: X = " + scanPosX + ", Y = " + scanPosY);
 
         //Set Debug Info..
         String txt1 = isWallInFront() + "";
@@ -149,11 +150,18 @@ public class HelloController {
         int d = actorForwardDirection;
         direction.setText("direction: " + (d == UP ? "UP" : (d == DOWN ? "DOWN" : (d == LEFT ? "LEFT" : "RIGHT"))));
 
+        // Check color at scan position
+        Color colorAtPos = getColorAtPosition(scanPosX, scanPosY);
+        System.out.println("Color at Scan Position: " + colorAtPos);
+
         //search the image at the scan location for a color. keep scan within bounds of image.
         if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
             System.out.println("Car pos is valid & in bounds");
             carGroup.setLayoutX(newXPos);
             carGroup.setLayoutY(newYPos);
+        }
+        else {
+            System.out.println("Car pos is not valid");
         }
     }
 
@@ -223,7 +231,6 @@ public class HelloController {
     }
 
     private void moveRobot() {
- //       System.out.println("Active Robot Actor -> Moving");
         anchorPane.requestFocus();
         int x = 0;
         int y = 0;
