@@ -53,9 +53,9 @@
          <children>
             <Group fx:id="carGroup">
                <children>
-                  <Rectangle fx:id="carbody" arcHeight="5.0" arcWidth="5.0" fill="#107625" height="9.0" layoutY="3.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                  <Rectangle fx:id="carTop" arcHeight="5.0" arcWidth="5.0" fill="#107625" height="9.0" layoutY="-5.0" stroke="BLACK" strokeType="INSIDE" width="19.0" />
-                  <Circle fx:id="wheel1" layoutX="23.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE">
+                  <Rectangle fx:id="carbody" arcHeight="5.0" arcWidth="5.0" fill="#107625" height="11.0" layoutY="3.0" stroke="BLACK" strokeType="INSIDE" width="25.0" />
+                  <Rectangle fx:id="carTop" arcHeight="5.0" arcWidth="5.0" fill="#107625" height="9.0" layoutY="-5.0" stroke="BLACK" strokeType="INSIDE" width="14.0" />
+                  <Circle fx:id="wheel1" layoutX="19.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE">
                      <fill>
                         <RadialGradient centerX="0.5" centerY="0.5" focusAngle="-5.29" focusDistance="0.7155962602807842" radius="0.7293577544186094">
                            <stops>
@@ -73,7 +73,7 @@
                         </RadialGradient>
                      </fill>
                   </Circle>
-                  <Polygon fill="#107625" layoutX="46.0" layoutY="-25.0" points="-27.599994659423828, 28.00001335144043, -16.999984741210938, 28.00001335144043, -27.599994659423828, 20.200000762939453" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                  <Polygon fill="#107625" layoutX="41.0" layoutY="-25.0" points="-27.599994659423828, 28.00001335144043, -16.999984741210938, 28.00001335144043, -27.599994659423828, 20.200000762939453" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
                   <Circle fx:id="wheel2" layoutX="6.0" layoutY="13.0" radius="5.0" stroke="BLACK" strokeType="INSIDE">
                      <fill>
                         <RadialGradient centerX="0.5" centerY="0.5" focusAngle="-5.29" focusDistance="0.7155962602807842" radius="0.7293577544186094">

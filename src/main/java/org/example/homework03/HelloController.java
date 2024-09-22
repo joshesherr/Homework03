@@ -206,6 +206,8 @@ public class HelloController {
         //keep movement within the bounds of the image.
         double carWidth = carGroup.getBoundsInParent().getWidth();
         double carHeight = carGroup.getBoundsInParent().getHeight();
+        System.out.println("Car Width = " + carWidth + "\nCar Height = " + carHeight);
+        System.out.println("Robot Width = " + robot.getImage().getWidth() + "\nRobot Height = " + robot.getImage().getHeight());
 
         if (newXPos + carWidth > maze.getImage().getWidth()) newXPos = maze.getImage().getWidth() - carWidth;
         else if (newXPos < 0) newXPos = 0;
