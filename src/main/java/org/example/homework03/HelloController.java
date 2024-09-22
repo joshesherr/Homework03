@@ -120,18 +120,14 @@ public class HelloController {
         //If Car would exceed right bounds of maze, validate
         if (newXPos + carWidth > maze.getImage().getWidth()) {
             newXPos = maze.getImage().getWidth() - carWidth;
-            System.out.println("Car would exceed right bounds of maze, validating");
         } else if (newXPos < 0) { //Else if Car would exceed left bounds of maze, validate
-            System.out.println("Car would exceed left bounds of maze, validating");
             newXPos = 0;
         }
 
         //If Car would exceed lower bounds of maze, validate
         if (newYPos + carHeight > maze.getImage().getHeight()) {
             newYPos = maze.getImage().getHeight() - carHeight;
-            System.out.println("Car would exceed lower bounds of maze, validating");
         } else if (newYPos < 0) { //Else if car would exceed upper bounds of maze, validate
-            System.out.println("Car would exceed upper bounds of maze, validating");
             newYPos = 0;
         }
 
