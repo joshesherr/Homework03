@@ -74,7 +74,7 @@ public class HelloController {
     @FXML
     private Text initialPosition;
 
-    // Initial positions of the robot and car
+    // Initial positions of the robot and car object
     private double initialRobotX;
     private double initialRobotY;
     private double initialCarX;
@@ -162,9 +162,10 @@ public class HelloController {
         carGroup.setLayoutY(newY);
     }
 
+    // Reset Button
     @FXML
     void onResetClicked(ActionEvent event) {
-        anchorPane.requestFocus();
+        anchorPane.requestFocus(); // Request focus to ensure key events are captured after resetting
 
         // Stop the auto solver if it's running
         if (timeline != null && timeline.getStatus() == Animation.Status.RUNNING) {
@@ -173,10 +174,10 @@ public class HelloController {
             startAuto.setText("Start Auto Solve");
         }
 
-        // Reset the actor's direction
+        // Reset the actor's direction to facing right
         actorForwardDirection = RIGHT;
 
-        // Reset the robot's position and rotation
+        // Reset the robot's position and rotation to initial values
         robot.setLayoutX(initialRobotX);
         robot.setLayoutY(initialRobotY);
         robot.setRotate(0);
@@ -187,23 +188,25 @@ public class HelloController {
         carGroup.setRotate(0);
         carGroup.setScaleX(1);
 
-        // Ensure the correct actor is displayed based on the activeRobotActor flag
+        // Ensure the correct actor is displayed
         if (activeRobotActor) {
+            // If the robot is the active actor
             if (!anchorPane.getChildren().contains(robot)) {
-                anchorPane.getChildren().add(robot);
+                anchorPane.getChildren().add(robot); // Add robot to the anchor pane if not already present
             }
-            anchorPane.getChildren().remove(carGroup);
-            swapCarBtn.setText("Switch to Car");
+            anchorPane.getChildren().remove(carGroup); // Remove car from the anchor pane
+            swapCarBtn.setText("Switch to Car"); // Update the swap button text
         } else {
+            // If the car is the active actor
             if (!anchorPane.getChildren().contains(carGroup)) {
-                anchorPane.getChildren().add(carGroup);
+                anchorPane.getChildren().add(carGroup); // Add car to the anchor pane if not already present
             }
-            anchorPane.getChildren().remove(robot);
+            anchorPane.getChildren().remove(robot); // Remove robot from the anchor pane
             swapCarBtn.setText("Switch to Robot");
         }
 
-        // Reset any UI elements or labels if necessary
-        initialPosition.setText("Reset complete. Let's play!");
+        // Display status of reset
+        initialPosition.setText("Reset complete!");
     }
 
     // Utility method to find center of carGroup, returns half width in X[0] and half Height in Y[1]
