@@ -45,7 +45,6 @@ public class HelloController {
     @FXML
     private ImageView maze;
 
-    //Car code begins here
     @FXML
     private HBox carBox;
 
