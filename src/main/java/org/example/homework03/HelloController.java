@@ -254,18 +254,6 @@ public class HelloController {
             double scanPosX = newXPos + roboCenterX + x * roboCenterX;
             double scanPosY = newYPos + roboCenterY + y * roboCenterY;
 
-//            //Set Debug Info..
-//            String txt1 = isWallInFront() + "";
-//            inFrontTxt.setText("isWallInFront: " + txt1);
-//            inFrontTxt.getStyleClass().clear();
-//            inFrontTxt.getStyleClass().add(txt1);
-//            String txt2 = isWallOnLeft() + "";
-//            onLeftTxt.setText("isWallOnLeft: " + txt2);
-//            onLeftTxt.getStyleClass().clear();
-//            onLeftTxt.getStyleClass().add(txt2);
-//            int d = robotFowardDirection;
-//            direction.setText("direction: " + (d == UP ? "UP" : (d == DOWN ? "DOWN" : (d == LEFT ? "LEFT" : "RIGHT"))));
-
             //search the image at the scan location for a color. keep scan within bounds of image.
             if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
                 robot.setLayoutX(newXPos);
