@@ -187,7 +187,7 @@ public class HelloController {
         carGroup.setRotate(0);
         carGroup.setScaleX(1);
 
-        // Ensure the correct actor is displayed based on the activeRobotActor flag
+        // Ensure the correct actor is displayed
         if (activeRobotActor) {
             if (!anchorPane.getChildren().contains(robot)) {
                 anchorPane.getChildren().add(robot);
@@ -202,8 +202,8 @@ public class HelloController {
             swapCarBtn.setText("Switch to Robot");
         }
 
-        // Reset any UI elements or labels if necessary
-        initialPosition.setText("Reset complete. Let's play!");
+        // Display status of reset
+        initialPosition.setText("Reset complete!");
     }
 
     // Utility method to find center of carGroup, returns half width in X[0] and half Height in Y[1]
