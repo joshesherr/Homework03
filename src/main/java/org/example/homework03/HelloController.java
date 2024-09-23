@@ -70,14 +70,8 @@ public class HelloController {
     @FXML
     private Text initialPosition;
 
-    private double initialActorXPos = 0.0;
-    private double initialActorYPos = 0.0;
-
-    //WIP Car code, make sure to make wheels spin while driving too :)
     private void moveCar() {
         anchorPane.requestFocus();
-        //Debugging statements
-        System.out.println("\nCar Y position before move: " + carGroup.getLayoutY());
 
         int x = 0;
         int y = 0;
@@ -108,13 +102,11 @@ public class HelloController {
         // Test moving the car to a new position.
         double newXPos = (robotSpeed * x) + carGroup.getLayoutX();
         double newYPos = (robotSpeed * y) + carGroup.getLayoutY();
-        System.out.println("New X position: " + newXPos + ", New Y position: " + newYPos);
 
         // Get the bounds of the carGroup
         Bounds carBounds = carGroup.getBoundsInParent();
         double carWidth = carBounds.getWidth() ;
         double carHeight = carBounds.getHeight();
-        System.out.println("Car Bounds: Width = " + carWidth + ", Height = " + carHeight);
 
         // Keep the movement within the bounds of the maze
         //If Car would exceed right bounds of maze, validate
@@ -132,36 +124,17 @@ public class HelloController {
         }
 
         // Perform collision detection (adjust for irregular shape)
-        //This might not be working correctly
         double[] center = findGroupCenter(carGroup);
-        double scanPosX = newXPos + (x * center[0]);
-        double scanPosY = newYPos + (y * center[1]);
-        System.out.println("Scan Position: X = " + scanPosX + ", Y = " + scanPosY);
-
-        //Set Debug Info..
-        String txt1 = isWallInFront() + "";
-        inFrontTxt.setText("isWallInFront: " + txt1);
-        inFrontTxt.getStyleClass().clear();
-        inFrontTxt.getStyleClass().add(txt1);
-        String txt2 = isWallOnLeft() + "";
-        onLeftTxt.setText("isWallOnLeft: " + txt2);
-        onLeftTxt.getStyleClass().clear();
-        onLeftTxt.getStyleClass().add(txt2);
-        int d = actorForwardDirection;
-        direction.setText("direction: " + (d == UP ? "UP" : (d == DOWN ? "DOWN" : (d == LEFT ? "LEFT" : "RIGHT"))));
+        double scanPosX = center[0] + (x * robotSpeed) * 2;
+        double scanPosY = center[1] + (y * robotSpeed) * 2;
 
         // Check color at scan position
         Color colorAtPos = getColorAtPosition(scanPosX, scanPosY);
-        System.out.println("Color at Scan Position: " + colorAtPos);
 
         //search the image at the scan location for a color. keep scan within bounds of image.
         if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
-            System.out.println("Car pos is valid & in bounds");
             carGroup.setLayoutX(newXPos);
             carGroup.setLayoutY(newYPos);
-        }
-        else {
-            System.out.println("Car pos is not valid");
         }
     }
 
@@ -174,14 +147,11 @@ public class HelloController {
         double newX = Math.max(0, Math.min(x - carCenterX, maze.getImage().getWidth() - carCenterX * 2));
         double newY = Math.max(0, Math.min(y - carCenterY, maze.getImage().getHeight() - carCenterY * 2));
 
-
-        System.out.println("Center of carGroup: X=" + carCenterX + ", Y=" + carCenterY);
-
         carGroup.setLayoutX(newX);
         carGroup.setLayoutY(newY);
     }
 
-    // Utility method to find center of carGroup
+    // Utility method to find center of carGroup, returns half width in X[0] and half Height in Y[1]
     private double[] findGroupCenter(Group group) {
         Bounds bounds = group.getBoundsInParent();
         double centerX = (bounds.getMinX() + bounds.getWidth() / 2.0);
@@ -189,7 +159,6 @@ public class HelloController {
         return new double[] {centerX, centerY};
     }
 
-    /////////////////// Line break, Car code ends here
     static final int UP=0, RIGHT=1, DOWN=2, LEFT=3;
     @FXML
     private ImageView robot;
@@ -268,18 +237,6 @@ public class HelloController {
             double scanPosX = newXPos + roboCenterX + x * roboCenterX;
             double scanPosY = newYPos + roboCenterY + y * roboCenterY;
 
-            //Set Debug Info..
-            String txt1 = isWallInFront() + "";
-            inFrontTxt.setText("isWallInFront: " + txt1);
-            inFrontTxt.getStyleClass().clear();
-            inFrontTxt.getStyleClass().add(txt1);
-            String txt2 = isWallOnLeft() + "";
-            onLeftTxt.setText("isWallOnLeft: " + txt2);
-            onLeftTxt.getStyleClass().clear();
-            onLeftTxt.getStyleClass().add(txt2);
-            int d = actorForwardDirection;
-            direction.setText("direction: " + (d == UP ? "UP" : (d == DOWN ? "DOWN" : (d == LEFT ? "LEFT" : "RIGHT"))));
-
             //search the image at the scan location for a color. keep scan within bounds of image.
             if (isColorValid(getColorAtPosition(scanPosX, scanPosY))) {
                 robot.setLayoutX(newXPos);
@@ -299,14 +256,11 @@ public class HelloController {
                 case RIGHT: actorForwardDirection =RIGHT; moveRobot(); break;
             }
         } else {
-            System.out.println("Car movement keys used");
             switch (e.getCode()) {
                 case UP: actorForwardDirection = UP;     moveCar(); break;
-                case DOWN: actorForwardDirection = DOWN; moveCar();
-         //           System.out.println("Down arrow for car pressed");
-                    break;
+                case DOWN: actorForwardDirection = DOWN; moveCar(); break;
                 case LEFT: actorForwardDirection = LEFT; moveCar(); break;
-                case RIGHT: actorForwardDirection =RIGHT; moveCar(); break;
+                case RIGHT: actorForwardDirection=RIGHT; moveCar(); break;
             }
         }
         e.consume();
@@ -377,7 +331,6 @@ public class HelloController {
                 }
             }
             else {// It workss
-                System.out.println("DOONNNNEE!!!!!");
                 startAuto.setSelected(false);
                 startAuto.setText("Start Auto Solve");
                 timeline.stop();
@@ -412,9 +365,11 @@ public class HelloController {
                     break;
             }
         } else {
-            double[] carCenter = findGroupCenter(carGroup);
-            scanPosX = carGroup.getLayoutX() + carCenter[0];
-            scanPosY = carGroup.getLayoutY() + carCenter[1];
+            // Find car's center coordinates and adjust scan position
+            double[] center = findGroupCenter(carGroup);
+            scanPosX = center[0];
+            scanPosY = center[1];
+
             //move scan toward current facing direction
             switch (actorForwardDirection) {
                 case UP:
@@ -459,9 +414,10 @@ public class HelloController {
             }
         } else {
             //set scan position to center of carGroup
-            double[] carCenter = findGroupCenter(carGroup);
-            scanPosX = carGroup.getLayoutX() + carCenter[0];
-            scanPosY = carGroup.getLayoutY() + carCenter[1];
+            // Find car's center coordinates and adjust scan position
+            double[] center = findGroupCenter(carGroup);
+            scanPosX = center[0];
+            scanPosY = center[1];
             //move scan toward current facing direction
             switch (actorForwardDirection) {
                 case UP:
@@ -511,7 +467,6 @@ public class HelloController {
         // Remove the nodes from their parent containers (Robot in AnchorPane, Car in Hbox)
         if (activeRobotActor) { //Validation to stop crashing, can implement else to swap backwards here
             activeRobotActor = false;
-            System.out.println("Active Robot Actor=false");
             swapCarBtn.setText("Switch to Robot");
 
             // Validation to add the robot before the button in the HBox
@@ -533,12 +488,11 @@ public class HelloController {
             //Orient car back to standard position
             carGroup.setRotate(0);
             carGroup.setScaleX(1);
-
-            System.out.println("Swapped robot and carGroup between AnchorPane and HBox");
+            //Swapped robot and carGroup between AnchorPane and HBox
         }
         else {
-            System.out.println("Active Robot Actor = true");
             activeRobotActor = true;
+            swapCarBtn.setText("Switch to Car");
             // Validation to add the Car before the button in the HBox
             if (buttonIndex != -1) {
                 carBox.getChildren().add(buttonIndex, carGroup);
