@@ -1,5 +1,6 @@
 package org.example.homework03;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
@@ -61,6 +62,10 @@ public class HelloController {
     private Button swapCarBtn;
 
     @FXML
+    private Button resetButton;
+
+
+    @FXML
     private Circle wheel1;
 
     @FXML
@@ -68,6 +73,13 @@ public class HelloController {
 
     @FXML
     private Text initialPosition;
+
+    // Initial positions of the robot and car
+    private double initialRobotX;
+    private double initialRobotY;
+    private double initialCarX;
+    private double initialCarY;
+
 
     private void moveCar() {
         anchorPane.requestFocus();
@@ -148,6 +160,50 @@ public class HelloController {
 
         carGroup.setLayoutX(newX);
         carGroup.setLayoutY(newY);
+    }
+
+    @FXML
+    void onResetClicked(ActionEvent event) {
+        anchorPane.requestFocus();
+
+        // Stop the auto solver if it's running
+        if (timeline != null && timeline.getStatus() == Animation.Status.RUNNING) {
+            timeline.stop();
+            startAuto.setSelected(false);
+            startAuto.setText("Start Auto Solve");
+        }
+
+        // Reset the actor's direction
+        actorForwardDirection = RIGHT;
+
+        // Reset the robot's position and rotation
+        robot.setLayoutX(initialRobotX);
+        robot.setLayoutY(initialRobotY);
+        robot.setRotate(0);
+
+        // Reset the car's position, rotation, and scale
+        carGroup.setLayoutX(initialCarX);
+        carGroup.setLayoutY(initialCarY);
+        carGroup.setRotate(0);
+        carGroup.setScaleX(1);
+
+        // Ensure the correct actor is displayed based on the activeRobotActor flag
+        if (activeRobotActor) {
+            if (!anchorPane.getChildren().contains(robot)) {
+                anchorPane.getChildren().add(robot);
+            }
+            anchorPane.getChildren().remove(carGroup);
+            swapCarBtn.setText("Switch to Car");
+        } else {
+            if (!anchorPane.getChildren().contains(carGroup)) {
+                anchorPane.getChildren().add(carGroup);
+            }
+            anchorPane.getChildren().remove(robot);
+            swapCarBtn.setText("Switch to Robot");
+        }
+
+        // Reset any UI elements or labels if necessary
+        initialPosition.setText("Reset complete. Let's play!");
     }
 
     // Utility method to find center of carGroup, returns half width in X[0] and half Height in Y[1]
@@ -289,8 +345,16 @@ public class HelloController {
             maze.setImage(new Image(file.toURI().toURL().toExternalForm()));
             initialPosition.setText("Please set the initial position of the robot");
             initializeRobotPosition(); // Initialize robot position after loading the maze
+
+            // Set initial positions
+            initialRobotX = robot.getLayoutX();
+            initialRobotY = robot.getLayoutY();
+
+            initialCarX = carGroup.getLayoutX();
+            initialCarY = carGroup.getLayoutY();
         }
     }
+
     // Helper method to move the active actor in auto solver
     private void moveActiveActor() {
         if (activeRobotActor) {

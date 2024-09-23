@@ -44,6 +44,7 @@
          <children>
             <Button alignment="TOP_LEFT" focusTraversable="false" mnemonicParsing="false" onAction="#onImageSelectClicked" prefHeight="26.0" prefWidth="133.0" text="Choose Maze Image" />
             <ToggleButton fx:id="startAuto" focusTraversable="false" mnemonicParsing="false" onAction="#onStartClicked" styleClass="button" text="Start Auto Solve" />
+            <Button fx:id="resetButton" mnemonicParsing="false" onAction="#onResetClicked" text="Reset" />
             <Text fx:id="onLeftTxt" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="true" />
             <Text fx:id="inFrontTxt" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="true" />
             <Text fx:id="direction" strokeType="OUTSIDE" strokeWidth="0.0" />
